@@ -5,13 +5,13 @@
 <template>
   <div>
     <NavBar />
-    <main class=" w-full h-[calc(100vh-3rem)] border border-red-500 sm:grid sm:grid-cols-[1fr_1fr] lg:grid-cols-[2fr_1fr] 2xl:grid-cols-[3fr_1fr]">
-      <div class="w-full h-full border border-green-500 overflow-y-auto">
-        <div class="lg:grid lg:grid-cols-2 2xl:grid-cols-3 p-2 lg:gap-2">
+    <main class=" w-full h-[calc(100vh-3rem)] sm:grid sm:grid-cols-[1fr_1fr] lg:grid-cols-[2fr_1fr] 2xl:grid-cols-[3fr_1fr]">
+      <div class="w-full h-full overflow-y-auto">
+        <div class="lg:grid lg:grid-cols-2 2xl:grid-cols-3 p-2 md:p-4 lg:gap-4">
           <div 
             v-for="item of data" 
             :key="item.id"
-            class="max-lg:pb-2"
+            class="max-md:pb-2 md:max-lg:pb-4"
           >
             <TaskListItem
               :title="item.title"
@@ -22,7 +22,11 @@
           </div>
         </div>
       </div>
-      <div class="hidden sm:block w-full h-full border border-blue-500 overflow-y-auto"></div>
+      <div class="hidden sm:block w-full h-full overflow-y-auto">
+        <p class=" text-center font-bold">
+          A chart will appear here soon  (woo!)
+        </p>
+      </div>
     </main>
   </div>
 </template>

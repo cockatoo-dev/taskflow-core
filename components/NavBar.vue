@@ -1,5 +1,5 @@
 <template>
-  <nav class=" bg-amber-600 h-12 w-full text-white">
+  <nav class=" bg-sky-600 h-12 w-full text-white">
     Navbar
   </nav>
 </template>

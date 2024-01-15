@@ -8,11 +8,11 @@
 
   const bgClass = ref("")
   if (props.status == "completed") {
-    bgClass.value = "bg-gradient-to-b from-blue-700 to-blue-800"
+    bgClass.value = "bg-blue-700"
   } else if (props.status == "ready") {
-    bgClass.value = "bg-gradient-to-b from-green-700 to-green-800"
+    bgClass.value = "bg-green-700"
   } else if (props.status == "not ready") {
-    bgClass.value = "bg-gradient-to-b from-red-700 to-red-800"
+    bgClass.value = "bg-red-700"
   } else {
     bgClass.value = "border border-black bg-slate-500"
   }
@@ -22,7 +22,7 @@
 
 <template>
   <div 
-    class=" w-full h-full rounded-xl p-2" 
+    class=" w-full h-full rounded-xl p-4" 
     :class="bgClass"
     @mouseenter="() => {isMouseOver = true}"
     @mouseleave="() => {isMouseOver = false}"
@@ -42,7 +42,7 @@
       </p>
     </div>
     <h3
-      class="text-white line-clamp-2 overflow-ellipsis text-4xl font-bold"
+      class="text-white line-clamp-2 overflow-ellipsis text-3xl font-bold"
       :class="isMouseOver ? 'underline' : ''"
     >
       {{ props.title }}
