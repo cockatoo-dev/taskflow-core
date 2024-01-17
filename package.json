@@ -15,12 +15,16 @@
     "@nuxtjs/eslint-module": "^4.1.0",
     "@nuxtjs/google-fonts": "^3.1.0",
     "@nuxtjs/tailwindcss": "^6.10.1",
+    "drizzle-kit": "^0.20.13",
     "eslint": "^8.54.0",
     "nuxt": "^3.9.0",
     "vue": "^3.4.0",
     "vue-router": "^4.2.5"
   },
   "dependencies": {
-    "@vueuse/nuxt": "^10.6.1"
+    "@types/better-sqlite3": "^7.6.8",
+    "@vueuse/nuxt": "^10.6.1",
+    "better-sqlite3": "^9.3.0",
+    "drizzle-orm": "^0.29.3"
   }
 }
