@@ -8,9 +8,9 @@
 
   const bgClass = ref("")
   if (props.status == "completed") {
-    bgClass.value = "bg-blue-700"
-  } else if (props.status == "ready") {
     bgClass.value = "bg-green-700"
+  } else if (props.status == "ready") {
+    bgClass.value = "bg-yellow-700"
   } else if (props.status == "not ready") {
     bgClass.value = "bg-red-700"
   } else {

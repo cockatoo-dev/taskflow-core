@@ -1,10 +1,12 @@
 <script setup lang="ts">
   const { data } = useFetch("/api/test")
+  const testDBData = useFetch("/api/tasks")
 </script>
 
 <template>
   <div>
     <NavBar />
+    <p>Test data: {{ testDBData.data }}</p>
     <main class=" w-full h-[calc(100vh-3rem)] sm:grid sm:grid-cols-[1fr_1fr] lg:grid-cols-[2fr_1fr] 2xl:grid-cols-[3fr_1fr]">
       <div class="w-full h-full overflow-y-auto">
         <div class="lg:grid lg:grid-cols-2 2xl:grid-cols-3 p-2 md:p-4 lg:gap-4">
