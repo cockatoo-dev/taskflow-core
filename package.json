@@ -25,6 +25,7 @@
     "@types/better-sqlite3": "^7.6.8",
     "@vueuse/nuxt": "^10.6.1",
     "better-sqlite3": "^9.3.0",
-    "drizzle-orm": "^0.29.3"
+    "drizzle-orm": "^0.29.3",
+    "zod": "^3.22.4"
   }
 }

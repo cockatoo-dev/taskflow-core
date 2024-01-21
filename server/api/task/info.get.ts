@@ -1,7 +1,7 @@
 export default defineEventHandler(async (e) => {
   const db = useDB()
+  const id = getQuery(e).id as string
 
-  const id = getRouterParam(e, 'id')
   if (!id) {
     throw createError({
       statusCode: 400,

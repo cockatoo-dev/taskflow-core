@@ -1,34 +1,106 @@
 <script setup lang="ts">
-  const { data } = useFetch("/api/test")
-  const testDBData = useFetch("/api/tasks")
+  const { data } = useFetch("/api/tasks")
+
+  const sortedTasks = computed(() => {
+    if (!data.value) {
+      return []
+    }
+    const result = [...data.value.tasks]
+    result.sort((a, b) => {
+      return taskSortNum(b.isComplete, b.isReady) - taskSortNum(a.isComplete, a.isReady)
+    })
+    return result
+  })
+
+  const stats = computed(() => {
+    const result = {
+      complete: 0,
+      ready: 0,
+      notReady: 0,
+      percent: 0,
+    }
+    
+    if (!data.value) {
+      return result
+    }
+    
+    for (const i of data.value.tasks) {
+      if (i.isComplete) {
+        result.complete += 1
+      } else if (i.isReady) {
+        result.ready += 1
+      } else {
+        result.notReady += 1
+      }
+    }
+    result.percent = Math.floor(result.complete / data.value.tasks.length * 100)
+    return result
+  })
 </script>
 
 <template>
-  <div>
-    <NavBar />
-    <p>Test data: {{ testDBData.data }}</p>
-    <main class=" w-full h-[calc(100vh-3rem)] sm:grid sm:grid-cols-[1fr_1fr] lg:grid-cols-[2fr_1fr] 2xl:grid-cols-[3fr_1fr]">
-      <div class="w-full h-full overflow-y-auto">
-        <div class="lg:grid lg:grid-cols-2 2xl:grid-cols-3 p-2 md:p-4 lg:gap-4">
-          <div 
-            v-for="item of data" 
-            :key="item.id"
-            class="max-md:pb-2 md:max-lg:pb-4"
-          >
-            <TaskListItem
-              :title="item.title"
-              :description="item.description"
-              :status="item.status"
-              :assigned="item.assignedName || 'Not assigned'"
-            />
-          </div>
-        </div>
+  <main class=" w-full min-w-80 h-[calc(100vh-4rem)] sm:grid sm:grid-cols-[50%_50%] lg:grid-cols-[67%_33%] 2xl:grid-cols-[75%_25%]">
+    <div class="w-full h-full">
+      <div class=" h-10 p-1 grid grid-cols-[1fr_auto]">
+        <h2 class="pl-2 leading-8 font-bold text-xl">
+          Current Tasks
+        </h2>
+        <NuxtLink
+          to="/task/new"
+          class=" px-2 rounded-md drop-shadow-md text-white font-bold leading-8 bg-teal-700 hover:underline"
+        >
+          Add Task
+        </NuxtLink>
       </div>
-      <div class="hidden sm:block w-full h-full overflow-y-auto">
-        <p class=" text-center font-bold">
-          A chart will appear here soon  (woo!)
+      <ul
+        v-if="data && data.tasks.length > 0" 
+        class="lg:grid lg:grid-cols-2 2xl:grid-cols-3 p-2 lg:p-4 lg:gap-4 max-h-[calc(100vh-5.5rem)] overflow-y-auto list-none m-0"
+      >
+        <li 
+          v-for="item of sortedTasks" 
+          :key="item.id"
+          class="max-lg:pb-2 m-0"
+        >
+          <TaskListItem
+            :task-id="item.id"
+            :title="item.title"
+            :description="item.description"
+            :is-complete="item.isComplete"
+            :is-ready="item.isReady"
+          />
+        </li>
+      </ul>
+      <div
+        v-else
+        class=" pt-8"
+      >
+        <h3 class=" font-bold text-3xl text-center text-black">
+          No tasks!
+        </h3>
+        <p class="text-center text-black">
+          Click "Add Task" above to create a task.
         </p>
       </div>
-    </main>
-  </div>
+    </div>
+    <div class="hidden sm:block w-full h-full overflow-y-auto p-1 lg:p-2 pt-8">
+      <div class="p-1 lg:p-2">
+        <p
+          v-if="stats.percent < 100"
+          class=" text-center text-3xl text-black font-bold"
+        >
+          We're <span class="text-blue-700">{{ stats.percent }}%</span> of the way there!
+        </p>
+        <p 
+          v-else 
+          class=" text-center text-3xl text-green-700 font-bold"
+        >
+          We've made it. Great work, team!
+        </p>
+      </div>
+      
+      <p class=" text-center font-bold">
+        A chart will appear here soon  (woo!)
+      </p>
+    </div>
+  </main>
 </template>

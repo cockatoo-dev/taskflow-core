@@ -47,7 +47,7 @@ export class db implements dbInterface {
       id,
       title,
       description,
-      isReady: false,
+      isReady: true,
       isComplete: false
     })
   }

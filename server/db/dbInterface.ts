@@ -33,7 +33,7 @@ export interface dbInterface {
   // Get (id, title, description, isReady, isComplete) about all tasks
   getTasks: () => Promise<DBTask[]>
 
-  // Add a task with initial state isReady=false, isComplete=false
+  // Add a task with initial state isReady=true, isComplete=false
   addTask: (id: string, title: string, description: string) => Promise<void>
 
   // Edit task with the specified ID
