@@ -6,7 +6,7 @@ export type DBDepsItem = {
 export type DBDepsTaskInfo = {
   id: string,
   title: string,
-  isReady: boolean,
+  numDeps: number,
   isComplete: boolean
 }
 
@@ -14,7 +14,7 @@ export type DBTask = {
   id: string,
   title: string,
   description: string,
-  isReady: boolean,
+  numDeps: number,
   isComplete: boolean
 }
 
@@ -42,8 +42,8 @@ export interface dbInterface {
   // Set the complete status of a specified task
   setTaskComplete: (id: string, value: boolean) => Promise<void>
 
-  // Set the ready status of a specified task
-  setTaskReady: (id: string, value: boolean) => Promise<void>
+  // Set the unsatisfied dependencies of a task
+  setTaskNumDeps: (id: string, value: number) => Promise<void>
 
   // Delete a task and all dependencies which contain that task
   deleteTask: (id: string) => Promise<void>

@@ -47,7 +47,7 @@ export class db implements dbInterface {
       id,
       title,
       description,
-      isReady: true,
+      numDeps: 0,
       isComplete: false
     })
   }
@@ -64,9 +64,9 @@ export class db implements dbInterface {
     .where(eq(tasks.id, id))
   }
 
-  public setTaskReady = async (id: string, value: boolean) => {
+  public setTaskNumDeps = async (id: string, value: number) => {
     await this._db.update(tasks)
-    .set({ isReady: value })
+    .set({ numDeps: value })
     .where(eq(tasks.id, id))
   }
 
@@ -95,8 +95,8 @@ export class db implements dbInterface {
     return await this._db.select({
       id: tasks.id,
       title: tasks.title,
+      numDeps: tasks.numDeps,
       isComplete: tasks.isComplete,
-      isReady: tasks.isReady
     })
     .from(deps)
     .where(eq(deps.source, source))
