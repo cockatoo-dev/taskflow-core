@@ -8,12 +8,16 @@
     disableSubmit.value = true
     if (title.value == '') {
       formError.value = 'Please enter a task title.'
+      disableSubmit.value = false
       return
     } else if (title.value.length > 25) {
       formError.value = 'Task title is too long.'
+      disableSubmit.value = false
       return
     } else if (description.value.length > 2500) {
       formError.value = 'Task description is too long.'
+      disableSubmit.value = false
+      return
     }
     const result = await $fetch('/api/task/add', {
       method: 'POST',
@@ -29,7 +33,7 @@
 </script>
 
 <template>
-  <div class=" w-full p-4 sm:w-[640px] mx-auto">
+  <StdContainer>
     <BackLink />
     <h2 class=" py-4 text-black text-4xl font-bold">
       New Task
@@ -37,12 +41,13 @@
     <form>
       <div>
         <label
-          for="title"
+          for="new-title"
           class="block pt-2 text-black font-bold"
         >
           Title (required)
         </label>
         <input
+          id="new-title"
           v-model="title"
           type="text"
           required
@@ -59,12 +64,13 @@
       
       <div>
         <label
-          for="description"
+          for="new-description"
           class="block pt-2 text-black font-bold"
         >
           Description
         </label>
         <textarea
+          id="new-description"
           v-model="description"
           rows="4"
           autocomplete="off"
@@ -98,5 +104,5 @@
     <p class="pt-4">
       Dependencies for this task can be added after the task is created.
     </p>
-  </div>
+  </StdContainer>
 </template>

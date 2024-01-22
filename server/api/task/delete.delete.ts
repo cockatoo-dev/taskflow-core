@@ -3,8 +3,7 @@ export default defineEventHandler(async (e) => {
   const db = useDB()
 
   const id = body.id
-
-  if (!id || body.value == undefined) {
+  if (!id) {
     throw createError({
       statusCode: 400,
       statusMessage: "Invalid request format"
@@ -12,13 +11,7 @@ export default defineEventHandler(async (e) => {
   }
 
   try {
-    if (!(await db.isTaskExists(id))) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: "Invalid task ID"
-      })
-    }
-    await db.setTaskComplete(id, body.value)
+    await db.deleteTask(id)
     return {}
   } catch (err) {
     dbErrorHandler(err)

@@ -4,13 +4,13 @@
     title: string,
     description: string,
     isComplete: boolean,
-    isReady: boolean,
+    numDeps: number
   }>()
   
   const bgClass = ref("")
   if (props.isComplete) {
     bgClass.value = "bg-green-700"
-  } else if (props.isReady) {
+  } else if (props.numDeps <= 0) {
     bgClass.value = "bg-blue-700"
   } else {
     bgClass.value = "bg-red-700"
@@ -31,7 +31,7 @@
       <p v-if="props.isComplete">
         COMPLETED!
       </p>
-      <p v-else-if="props.isReady">
+      <p v-else-if="props.numDeps < 0">
         READY TO GO!
       </p>
       <p v-else>

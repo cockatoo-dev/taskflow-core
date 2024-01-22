@@ -7,7 +7,7 @@
     }
     const result = [...data.value.tasks]
     result.sort((a, b) => {
-      return taskSortNum(b.isComplete, b.isReady) - taskSortNum(a.isComplete, a.isReady)
+      return taskSortNum(b.isComplete, b.numDeps) - taskSortNum(a.isComplete, a.numDeps)
     })
     return result
   })
@@ -27,7 +27,7 @@
     for (const i of data.value.tasks) {
       if (i.isComplete) {
         result.complete += 1
-      } else if (i.isReady) {
+      } else if (i.numDeps <= 0) {
         result.ready += 1
       } else {
         result.notReady += 1
@@ -66,7 +66,7 @@
             :title="item.title"
             :description="item.description"
             :is-complete="item.isComplete"
-            :is-ready="item.isReady"
+            :num-deps="item.numDeps"
           />
         </li>
       </ul>
