@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  const { data } = useFetch("/api/tasks")
+  let refreshInterval: any
+  const { data, refresh } = useFetch("/api/tasks")
 
   const sortedTasks = computed(() => {
     if (!data.value) {
@@ -35,6 +36,13 @@
     }
     result.percent = Math.floor(result.complete / data.value.tasks.length * 100)
     return result
+  })
+
+  onMounted(() => {
+    refreshInterval = setInterval(refresh, 20000)
+  })
+  onUnmounted(() => {
+    clearInterval(refreshInterval)
   })
 </script>
 
@@ -84,22 +92,25 @@
     </div>
     <div class="hidden sm:block w-full h-full overflow-y-auto p-1 lg:p-2 pt-8">
       <div class="p-1 lg:p-2">
-        <p
-          v-if="stats.percent < 100"
-          class=" text-center text-3xl text-black font-bold"
-        >
-          We're <span class="text-blue-700">{{ stats.percent }}%</span> of the way there!
-        </p>
-        <p 
-          v-else 
-          class=" text-center text-3xl text-green-700 font-bold"
-        >
-          We've made it. Great work, team!
-        </p>
+        <div v-if="stats.percent < 100">
+          <p
+            class=" text-center text-3xl text-black font-bold"
+          >
+            We're <span class="text-blue-700">{{ stats.percent }}%</span> of the way there!
+          </p>
+        </div>
+        <div v-else>
+          <p class=" text-center text-3xl text-green-700 font-bold">
+            We've made it. 
+          </p>
+          <p class=" text-center text-3xl text-green-700 font-bold">
+            Great work, team!
+          </p>
+        </div>
       </div>
       
       <p class=" text-center font-bold">
-        A chart will appear here soon  (woo!)
+        A chart will appear here soon (woo!)
       </p>
     </div>
   </main>

@@ -36,6 +36,15 @@ export class db implements dbInterface {
     .where(eq(tasks.id, id)))
   }
 
+  public getTaskPair = async (first: string, second: string) => {
+    return (await this._db.select()
+    .from(tasks)
+    .where(or(
+      eq(tasks.id, first),
+      eq(tasks.id, second)
+    )))
+  }
+
   public getTasks = async () => {
     return await this._db.select()
     .from(tasks)
@@ -59,9 +68,46 @@ export class db implements dbInterface {
   }
 
   public setTaskComplete = async (id: string, value: boolean) => {
-    await this._db.update(tasks)
-    .set({ isComplete: value })
-    .where(eq(tasks.id, id))
+    await this._db.transaction(async (t) => {
+      await t.update(tasks)
+      .set({ isComplete: value })
+      .where(eq(tasks.id, id))
+
+      const depsInfo = await t.select({
+        id: tasks.id,
+        title: tasks.title,
+        numDeps: tasks.numDeps,
+        isComplete: tasks.isComplete,
+      })
+      .from(deps)
+      .where(eq(deps.dest, id))
+      .innerJoin(tasks, eq(deps.source, tasks.id))
+
+      for (const i of depsInfo) {
+        if (value) {
+          if (i.numDeps < 1) {
+            await t.update(tasks)
+            .set({ numDeps: 0 })
+            .where(eq(tasks.id, i.id))
+          } else {
+            await t.update(tasks)
+            .set({ numDeps: i.numDeps - 1 })
+            .where(eq(tasks.id, i.id))
+          }
+        } else {
+          if (i.numDeps < 1) {
+            await t.update(tasks)
+            .set({ numDeps: 1 })
+            .where(eq(tasks.id, i.id))
+          } else {
+            await t.update(tasks)
+            .set({ numDeps: i.numDeps + 1 })
+            .where(eq(tasks.id, i.id))
+          }
+        }
+      }
+    })
+    
   }
 
   public setTaskNumDeps = async (id: string, value: number) => {
@@ -71,13 +117,37 @@ export class db implements dbInterface {
   }
 
   public deleteTask = async (id: string) => {
-    await this._db.delete(deps)
-    .where(or(
-      eq(deps.source, id),
-      eq(deps.dest, id)
-    ))
-    await this._db.delete(tasks)
-    .where(eq(tasks.id, id))
+    await this._db.transaction(async (t) => {
+      const depsInfo = await t.select({
+        id: tasks.id,
+        num: tasks.numDeps
+      })
+      .from(deps)
+      .where(eq(deps.source, id))
+      .innerJoin(tasks, eq(deps.dest, tasks.id))
+
+      for (const i of depsInfo) {
+        let newNum: number
+        if (i.num < 1) {
+          newNum = 0
+        } else {
+          newNum = i.num - 1
+        }
+
+        await t.update(tasks)
+        .set({ numDeps: newNum })
+        .where(eq(tasks.id, i.id))
+      }
+      
+      await t.delete(deps)
+      .where(or(
+        eq(deps.source, id),
+        eq(deps.dest, id)
+      ))
+
+      await t.delete(tasks)
+      .where(eq(tasks.id, id))
+    })
   }
 
   public getDeps = async () => {
@@ -85,10 +155,16 @@ export class db implements dbInterface {
     .from(deps)
   }
 
-  public getDestDeps = async (dest: string) => {
-    return await this._db.select()
+  public getDestDepsInfo = async (dest: string) => {
+    return await this._db.select({
+      id: tasks.id,
+      title: tasks.title,
+      numDeps: tasks.numDeps,
+      isComplete: tasks.isComplete,
+    })
     .from(deps)
     .where(eq(deps.dest, dest))
+    .innerJoin(tasks, eq(deps.source, tasks.id))
   }
 
   public getSourceDepsInfo = async (source: string) => {
@@ -103,15 +179,29 @@ export class db implements dbInterface {
     .innerJoin(tasks, eq(deps.dest, tasks.id))
   }
 
-  public addDeps = async (source: string, dest: string) => {
-    await this._db.insert(deps)
-    .values({ source, dest })
+  public addDeps = async (source: string, dest: string, newDepsNum: number) => {
+    await this._db.transaction(async (t) => {
+      await t.insert(deps)
+      .values({ source, dest })
+
+      await t.update(tasks)
+      .set({ numDeps: newDepsNum })
+      .where(eq(tasks.id, source))
+    })
+    
   }
 
-  public removeDeps = async (source: string, dest: string) => {
-    await this._db.delete(deps).where(and(
-      eq(deps.source, source),
-      eq(deps.dest, dest)
-    ))
+  public removeDeps = async (source: string, dest: string, newDepsNum: number) => {
+    await this._db.transaction(async (t) => {
+      await t.delete(deps)
+      .where(and(
+        eq(deps.source, source),
+        eq(deps.dest, dest)
+      ))
+
+      await t.update(tasks)
+      .set({ numDeps: newDepsNum })
+      .where(eq(tasks.id, source))
+    })
   }
 }

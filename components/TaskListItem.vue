@@ -8,6 +8,7 @@
   }>()
   
   const bgClass = ref("")
+  
   if (props.isComplete) {
     bgClass.value = "bg-green-700"
   } else if (props.numDeps <= 0) {
@@ -15,6 +16,16 @@
   } else {
     bgClass.value = "bg-red-700"
   }
+
+  watch(() => [props.isComplete, props.numDeps], () => {
+    if (props.isComplete) {
+    bgClass.value = "bg-green-700"
+  } else if (props.numDeps <= 0) {
+    bgClass.value = "bg-blue-700"
+  } else {
+    bgClass.value = "bg-red-700"
+  }
+  })
 
   const isMouseOver = ref(false)
 </script>
@@ -31,7 +42,7 @@
       <p v-if="props.isComplete">
         COMPLETED!
       </p>
-      <p v-else-if="props.numDeps < 0">
+      <p v-else-if="props.numDeps <= 0">
         READY TO GO!
       </p>
       <p v-else>

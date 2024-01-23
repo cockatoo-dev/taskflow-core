@@ -216,16 +216,12 @@
         <h2 class=" text-3xl text-black font-bold pb-2">
           {{ data.task.title }}
         </h2>
-        <MultiLineP
-          :text="data.task.description"
-          class="pb-2"
-        />
 
-        <div class="text-center">
+        <div class="text-center pb-2">
           <button
             v-if="!localIsComplete"
             type="button"
-            class=" m-0 px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-green-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
+            class=" px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-green-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
             :disabled="completeDisabled"
             @click="() => setComplete(true)"
           >
@@ -234,24 +230,49 @@
           <button
             v-else
             type="button"
-            class=" m-0 px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-teal-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
+            class=" px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-teal-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
             :disabled="completeDisabled"
             @click="() => setComplete(false)"
           >
             Mark as Not Completed
           </button>
         </div>
+
+        <MultiLineP
+          :text="data.task.description"
+          class="pb-2"
+        />
+
         <div class="text-center pt-2">
           <button
             type="button"
-            class=" mx-1 px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-teal-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
+            class=" px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-teal-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
             @click="() => isEditing = true"
           >
-            Edit Task
+            Edit Task Details
           </button>
+        </div>
+
+        <h3 class="text-xl font-bold text-black">
+          Task Dependencies
+        </h3>
+        <div class="w-full md:grid md:grid-cols-2">
+          <div class="md:pr-1">
+            <h4 class=" text-black">
+              Current Dependencies
+            </h4>
+          </div>
+          <form class="block md:pl-1">
+            <h4 class=" text-black">
+              Add a Dependency
+            </h4>
+          </form>
+        </div>
+
+        <div class="text-center pt-2">
           <button
             type="button"
-            class=" mx-1 px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-red-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
+            class=" px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-red-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
             @click="deleteTask"
           >
             Delete Task

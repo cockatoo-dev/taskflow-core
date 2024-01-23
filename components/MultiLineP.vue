@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  defineProps<{
+  const props = defineProps<{
     text: string,
     class?: string
   }>()
@@ -9,7 +9,7 @@
   <p
     v-for="line in $props.text.split('\n')"
     :key="line"
-    :class="$props.class || ''"
+    :class="props.class || ''"
   >
     {{ line }}
   </p>

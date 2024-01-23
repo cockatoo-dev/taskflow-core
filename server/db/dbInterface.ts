@@ -30,6 +30,8 @@ export interface dbInterface {
   // Return object should be an array with one item.
   getTask: (id: string) => Promise<DBTask[]>
 
+  getTaskPair: (first: string, second: string) => Promise<DBTask[]>
+
   // Get (id, title, description, isReady, isComplete) about all tasks
   getTasks: () => Promise<DBTask[]>
 
@@ -54,13 +56,13 @@ export interface dbInterface {
   // Get information about the dependencies (dest) of a task specified by ID (source)
   getSourceDepsInfo: (source: string) => Promise<DBDepsTaskInfo[]>
 
-  // Get a list of task IDs (source) which have a specified dependency (dest)
-  getDestDeps: (dest: string) => Promise<DBDepsItem[]>
+  // Get information of tasks (source) which have a specified dependency (dest)
+  getDestDepsInfo: (dest: string) => Promise<DBDepsTaskInfo[]>
 
   // Add a dependency between two tasks.
-  addDeps: (source: string, dest: string) => Promise<void>
+  addDeps: (source: string, dest: string, newDepsNum: number) => Promise<void>
 
   // Remove a dependency between two tasks.
-  removeDeps: (source: string, dest: string) => Promise<void>
+  removeDeps: (source: string, dest: string, newDepsNum: number) => Promise<void>
   
 }
