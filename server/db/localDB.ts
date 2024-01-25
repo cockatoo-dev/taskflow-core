@@ -50,6 +50,16 @@ export class db implements dbInterface {
     .from(tasks)
   }
 
+  public getTasksInfo = async () => {
+    return await this._db.select({
+      id: tasks.id,
+      title: tasks.title,
+      isComplete: tasks.isComplete,
+      numDeps: tasks.numDeps
+    })
+    .from(tasks)
+  }
+
   public addTask = async (id: string, title: string, description: string) => {
     await this._db.insert(tasks)
     .values({ 
@@ -123,8 +133,8 @@ export class db implements dbInterface {
         num: tasks.numDeps
       })
       .from(deps)
-      .where(eq(deps.source, id))
-      .innerJoin(tasks, eq(deps.dest, tasks.id))
+      .where(eq(deps.dest, id))
+      .innerJoin(tasks, eq(deps.source, tasks.id))
 
       for (const i of depsInfo) {
         let newNum: number

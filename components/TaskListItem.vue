@@ -7,24 +7,14 @@
     numDeps: number
   }>()
   
-  const bgClass = ref("")
-  
-  if (props.isComplete) {
-    bgClass.value = "bg-green-700"
-  } else if (props.numDeps <= 0) {
-    bgClass.value = "bg-blue-700"
-  } else {
-    bgClass.value = "bg-red-700"
-  }
-
-  watch(() => [props.isComplete, props.numDeps], () => {
+  const bgClass = computed(() => {
     if (props.isComplete) {
-    bgClass.value = "bg-green-700"
-  } else if (props.numDeps <= 0) {
-    bgClass.value = "bg-blue-700"
-  } else {
-    bgClass.value = "bg-red-700"
-  }
+      return "bg-green-700"
+    } else if (props.numDeps <= 0) {
+      return "bg-blue-700"
+    } else {
+      return "bg-red-700"
+    }
   })
 
   const isMouseOver = ref(false)

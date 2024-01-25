@@ -1,5 +1,6 @@
 <script setup lang="ts">
   let refreshInterval: any
+  let addDepsLastUpdate = 0
   const route = useRoute()
   const { data, refresh } = useFetch("/api/task/info", {
     params: {
@@ -7,6 +8,10 @@
     },
     method: 'get'
   })
+  const addDepsFetch = useFetch("/api/tasksInfo", {
+    immediate: false
+  })
+
   const localIsComplete = ref(false)
   const completeDisabled = ref(false)
   const isEditing = ref(false)
@@ -14,6 +19,11 @@
   const editDescription = ref('')
   const editDisable = ref(false)
   const editError = ref('')
+  const addDepsSearch = ref('')
+  const addDepsShow = ref(false)
+  const addDepsId = ref('')
+  const addDepsDisable = ref(true)
+  const removeDepsDisable = ref(false)
 
   watch(data, async () => {
     if (!data || !data.value) {
@@ -40,6 +50,46 @@
       })
       refresh()
     }
+  })
+
+  const depsExists = (id: string) => {
+    console.log('run depsExists')
+    for (const i of data.value?.deps || []) {
+      console.log(i.title)
+      if (i.id == id) {
+        console.log('return true')
+        return true
+      }
+    }
+    console.log('return false')
+    return false
+  }
+  
+  const addDepsList = computed(() => {
+    console.log(`update addDepsList with search value ${addDepsSearch.value}`)
+    if (!addDepsFetch.data || !addDepsFetch.data.value) {
+      return []
+    }
+
+    console.log(addDepsFetch.data.value.tasksInfo)
+    const result: typeof addDepsFetch.data.value.tasksInfo = []
+    for (const i of addDepsFetch.data.value.tasksInfo) {
+      if (
+          !depsExists(i.id) &&
+          i.id != route.params.id &&
+          i.title.includes(addDepsSearch.value)
+        ) {
+        result.push(i)
+      } else {
+        console.log(`skipping adding task ${i.title}`)
+      }
+    }
+
+    result.sort((a, b) => {
+      return taskSortNum(b.isComplete, b.numDeps) - taskSortNum(a.isComplete, a.numDeps)
+    })
+    console.log(result)
+    return result
   })
 
   const refreshFn = () => {
@@ -104,6 +154,54 @@
     isEditing.value = false
     editTitle.value = data.value?.task.title || ''
     editDescription.value = data.value?.task.description || ''
+  }
+
+  const addDepsFocus = async () => {
+    if (Date.now() - addDepsLastUpdate > 20000) {
+      addDepsFetch.refresh()
+      addDepsLastUpdate = Date.now()
+    }
+    addDepsShow.value = true
+    addDepsDisable.value = true
+    addDepsId.value = ''
+  }
+
+  const addDepsSelect = (id: string) => {
+    addDepsId.value = id
+    addDepsDisable.value = false
+  }
+  
+  const addDepsSubmit = async () => {
+    if (!data.value) {
+      return
+    }
+    
+    addDepsDisable.value = true
+    await $fetch('/api/deps/add', {
+      method: 'post',
+      body: {
+        source: data.value.task.id,
+        dest: addDepsId.value,
+      }
+    })
+
+    addDepsShow.value = false
+    addDepsSearch.value = ''
+    addDepsId.value = ''
+    await refresh()
+  }
+
+  const removeDeps = async (id: string) => {
+    removeDepsDisable.value = true
+    await $fetch('/api/deps/remove', {
+      method: 'delete',
+      body: {
+        source: route.params.id,
+        dest: id
+      }
+    })
+    await refresh()
+    removeDepsDisable.value = false
   }
 
   onMounted(() => {
@@ -258,15 +356,86 @@
         </h3>
         <div class="w-full md:grid md:grid-cols-2">
           <div class="md:pr-1">
-            <h4 class=" text-black">
+            <h4 class=" text-black font-bold">
               Current Dependencies
             </h4>
+
+            <div class="w-full max-w-full h-48">
+              <div
+                v-for="item of data.deps"
+                :key="item.id"
+                class="grid grid-cols-[1fr_auto]"
+              >
+                <RemoveDepsItem
+                  :id="item.id"
+                  :title="item.title"
+                  :is-complete="item.isComplete"
+                  :num-deps="item.numDeps"
+                />
+                <div class="pl-1">
+                  <button
+                    type="button"
+                    class=" px-2 py-1 rounded drop-shadow text-white bg-red-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
+                    :disabled="removeDepsDisable"
+                    @click="() => removeDeps(item.id)"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-          <form class="block md:pl-1">
-            <h4 class=" text-black">
+          <div class="md:pl-1">
+            <h4 class=" text-black font-bold">
               Add a Dependency
             </h4>
-          </form>
+            <input
+              v-model="addDepsSearch"
+              type="text"
+              autocomplete="off"
+              placeholder="Enter a task title here"
+              class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 hover:bg-teal-300 focus:bg-teal-300 text-black"
+              @focus="addDepsFocus"
+            >
+            <div class="h-32 my-1 w-full overflow-y-auto">
+              <div v-if="addDepsShow && addDepsFetch.data.value">
+                <div
+                  v-for="item of addDepsList"
+                  :key="item.id"
+                  class="p-1"
+                  @click="() => addDepsSelect(item.id)"
+                >
+                  <AddDepsItem
+                    :id="item.id"
+                    :title="item.title"
+                    :is-complete="item.isComplete"
+                    :num-deps="item.numDeps"
+                    :selected="addDepsId"
+                  />
+                </div>
+              </div>
+              <div v-else-if="addDepsShow">
+                <p class="pt-12 text-center text-gray-700">
+                  Loading tasks...
+                </p>
+              </div>
+              <div v-else>
+                <p class="pt-12 text-center text-gray-700">
+                  Use the search bar above to search for a task.
+                </p>
+              </div>
+            </div>
+            <div>
+              <button
+                type="button"
+                class="mx-1 px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-teal-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
+                :disabled="addDepsDisable"
+                @click="addDepsSubmit"
+              >
+                Add Dependency
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="text-center pt-2">

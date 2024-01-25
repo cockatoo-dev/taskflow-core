@@ -53,13 +53,17 @@ export default defineEventHandler(async (e) => {
 
     let newNum
     if (tasksInfo[0].id == body.source) {
-      if (tasksInfo[0].numDeps < 1) {
+      if (tasksInfo[0].isComplete) {
+        newNum = tasksInfo[0].numDeps
+      } else if (tasksInfo[0].numDeps < 1) {
         newNum = 1
       } else {
         newNum = tasksInfo[0].numDeps + 1
       }
     } else {
-      if (tasksInfo[1].numDeps < 1) {
+      if (tasksInfo[1].isComplete) {
+        newNum = tasksInfo[1].numDeps
+      } else if (tasksInfo[1].numDeps < 1) {
         newNum = 1
       } else {
         newNum = tasksInfo[1].numDeps + 1
