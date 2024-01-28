@@ -70,7 +70,7 @@
           Add Task
         </NuxtLink>
       </div>
-      <div class="px-1">
+      <div class="p-1">
         <input
           v-model="searchValue"
           type="text"
@@ -81,7 +81,7 @@
       </div>
       <ul
         v-if="data && data.tasks.length > 0" 
-        class="lg:grid lg:grid-cols-2 2xl:grid-cols-3 p-2 lg:p-4 lg:gap-4 max-h-[calc(100vh-5.5rem)] overflow-y-auto list-none m-0"
+        class="lg:grid lg:grid-cols-2 2xl:grid-cols-3 p-2 lg:p-4 lg:gap-4 max-h-[calc(100vh-8rem)] overflow-y-auto list-none m-0"
       >
         <li 
           v-for="item of displayTasks" 

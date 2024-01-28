@@ -233,7 +233,7 @@
           v-else
           class=" block px-4 py-2 rounded-md drop-shadow-md font-bold text-white text-center bg-red-700"
         >
-          This task is not ready to be completed. {{ `${data.task.numDeps} ${data.task.numDeps == 1 ? 'task' : 'tasks'}` }} depended on by this task {{ `${data.task.numDeps} ${data.task.numDeps == 1 ? 'has' : 'have'}` }} not been completed yet.
+          This task is not ready to be completed. {{ `${data.task.numDeps} ${data.task.numDeps == 1 ? 'task' : 'tasks'}` }} depended on by this task {{ `${data.task.numDeps == 1 ? 'has' : 'have'}` }} not been completed yet.
         </p>
       </div>
       
@@ -360,12 +360,12 @@
               Current Dependencies
             </h4>
 
-            <div class="w-full max-w-full h-48">
+            <div class="w-full max-w-full h-48 overflow-y-scroll">
               <div v-if="data.deps.length > 0">
                 <div
                   v-for="item of data.deps"
                   :key="item.id"
-                  class="grid grid-cols-[1fr_auto]"
+                  class="pt-1 grid grid-cols-[1fr_auto]"
                 >
                   <RemoveDepsItem
                     :id="item.id"
