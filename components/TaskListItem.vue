@@ -9,11 +9,11 @@
   
   const bgClass = computed(() => {
     if (props.isComplete) {
-      return "bg-green-700"
+      return "bg-green-700 dark:bg-green-300"
     } else if (props.numDeps <= 0) {
-      return "bg-blue-700"
+      return "bg-blue-700 dark:bg-blue-300"
     } else {
-      return "bg-red-700"
+      return "bg-red-700 dark:bg-red-300"
     }
   })
 
@@ -28,7 +28,7 @@
     @mouseenter="() => {isMouseOver = true}"
     @mouseleave="() => {isMouseOver = false}"
   >
-    <div class=" text-white text-xs font-bold tracking-wider">
+    <div class=" text-white dark:text-black text-xs font-bold tracking-wider">
       <p v-if="props.isComplete">
         COMPLETED!
       </p>
@@ -40,13 +40,13 @@
       </p>
     </div>
     <h3
-      class="text-white line-clamp-1 overflow-ellipsis text-2xl font-bold"
+      class="text-white dark:text-black line-clamp-1 overflow-ellipsis text-2xl font-bold"
       :class="isMouseOver ? 'underline' : ''"
       :title="$props.title"
     >
       {{ props.title }}
     </h3>
-    <p class=" h-12 lg:h-24 text-white line-clamp-2 lg:line-clamp-4 overflow-ellipsis">
+    <p class=" h-12 lg:h-24 text-white dark:text-black line-clamp-2 lg:line-clamp-4 overflow-ellipsis">
       {{ props.description }}
     </p>
   </NuxtLink>

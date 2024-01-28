@@ -25,7 +25,9 @@
     "@types/better-sqlite3": "^7.6.8",
     "@vueuse/nuxt": "^10.6.1",
     "better-sqlite3": "^9.3.0",
+    "chart.js": "^4.4.1",
     "drizzle-orm": "^0.29.3",
+    "vue-chartjs": "^5.3.0",
     "zod": "^3.22.4"
   }
 }

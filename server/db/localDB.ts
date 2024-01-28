@@ -1,4 +1,4 @@
-import { and, eq, or } from 'drizzle-orm'
+import { and, eq, or, asc } from 'drizzle-orm'
 import { drizzle, BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
 import Database from 'better-sqlite3'
 import { dbInterface } from './dbInterface'
@@ -48,6 +48,7 @@ export class db implements dbInterface {
   public getTasks = async () => {
     return await this._db.select()
     .from(tasks)
+    .orderBy(asc(tasks.title))
   }
 
   public getTasksInfo = async () => {
@@ -58,6 +59,7 @@ export class db implements dbInterface {
       numDeps: tasks.numDeps
     })
     .from(tasks)
+    .orderBy(asc(tasks.title))
   }
 
   public addTask = async (id: string, title: string, description: string) => {
@@ -173,6 +175,7 @@ export class db implements dbInterface {
       isComplete: tasks.isComplete,
     })
     .from(deps)
+    .orderBy(asc(tasks.title))
     .where(eq(deps.dest, dest))
     .innerJoin(tasks, eq(deps.source, tasks.id))
   }
@@ -185,6 +188,7 @@ export class db implements dbInterface {
       isComplete: tasks.isComplete,
     })
     .from(deps)
+    .orderBy(asc(tasks.title))
     .where(eq(deps.source, source))
     .innerJoin(tasks, eq(deps.dest, tasks.id))
   }

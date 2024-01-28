@@ -35,14 +35,14 @@
 <template>
   <StdContainer>
     <BackLink />
-    <h2 class=" py-4 text-black text-4xl font-bold">
+    <h2 class=" py-4 text-black dark:text-white text-4xl font-bold">
       New Task
     </h2>
     <form>
       <div>
         <label
           for="new-title"
-          class="block pt-2 text-black font-bold"
+          class="block pt-2 text-black dark:text-white font-bold"
         >
           Title (required)
         </label>
@@ -52,11 +52,11 @@
           type="text"
           required
           autocomplete="off"
-          class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 hover:bg-teal-300 focus:bg-teal-300 text-black text-xl sm:text-2xl font-bold"
+          class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 dark:bg-teal-800 hover:bg-teal-300 hover:dark:bg-teal-700 focus:bg-teal-300 focus:dark:bg-teal-700 text-black dark:text-white text-xl sm:text-2xl font-bold"
         >
         <p
           class=" h-4 text-right text-xs"
-          :class="title.length > 25 ? 'text-red-700' : ''"
+          :class="title.length > 25 ? 'text-red-700 dark:text-red-300' : ''"
         >
           {{ title.length }}/25
         </p>
@@ -65,7 +65,7 @@
       <div>
         <label
           for="new-description"
-          class="block pt-2 text-black font-bold"
+          class="block pt-2 text-black dark:text-white font-bold"
         >
           Description
         </label>
@@ -75,19 +75,19 @@
           rows="4"
           autocomplete="off"
           maxlength="2500"
-          class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 hover:bg-teal-300 focus:bg-teal-300 text-black"
+          class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 dark:bg-teal-800 hover:bg-teal-300 hover:dark:bg-teal-700 focus:bg-teal-300 focus:dark:bg-teal-700 text-black dark:text-white"
         />
         <p
           class=" h-4 text-right text-xs"
           :class="description.length > 2500 ? 'text-red-700' : ''"
         >
-          <span v-if="description.length >= 225">{{ description.length }}/2500</span>
+          <span v-if="description.length >= 2250">{{ description.length }}/2500</span>
         </p>
       </div>
 
       <button
         type="submit"
-        class=" block m-0 px-2 py-1 rounded-md drop-shadow-md text-white font-bold bg-teal-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
+        class=" block m-0 px-2 py-1 rounded-md drop-shadow-md text-white dark:text-black font-bold bg-teal-700 dark:bg-teal-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
         :disabled="disableSubmit"
         @click.prevent="submitForm"
       >
@@ -96,12 +96,12 @@
 
       <div
         v-if="formError != ''"
-        class="mt-2 px-2 py-1 bg-red-300 border border-red-700 rounded-md"
+        class="mt-2 px-2 py-1 bg-red-300 dark:bg-red-700 border border-red-700 dark:border-red-300 rounded-md"
       >
         {{ formError }}
       </div>
     </form>
-    <p class="pt-4">
+    <p class="pt-4 text-black dark:text-white">
       Dependencies for this task can be added after the task is created.
     </p>
   </StdContainer>

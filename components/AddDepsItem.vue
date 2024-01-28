@@ -9,20 +9,20 @@
 
   const bgClass = computed(() => {
     if (props.selected == props.id) {
-      return "bg-yellow-700"
+      return "bg-yellow-700 dark:bg-yellow-300"
     } else if (props.isComplete) {
-      return "bg-green-700"
+      return "bg-green-700 dark:bg-green300"
     } else if (props.numDeps <= 0) {
-      return "bg-blue-700"
+      return "bg-blue-700 dark:bg-blue-300"
     } else {
-      return "bg-red-700"
+      return "bg-red-700 dark:bg-red-300"
     }
   })
 </script>
 
 <template>
   <div
-    class="w-full px-2 py-1 text-white line-clamp-1 overflow-ellipsis rounded drop-shadow hover:underline hover:cursor-pointer"
+    class="w-full px-2 py-1 text-white dark:text-black line-clamp-1 overflow-ellipsis rounded drop-shadow hover:underline hover:cursor-pointer"
     :class="bgClass"
   >
     {{ props.title }}

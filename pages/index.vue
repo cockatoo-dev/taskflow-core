@@ -60,12 +60,12 @@
   <main class=" w-full min-w-80 h-[calc(100vh-4rem)] sm:grid sm:grid-cols-[50%_50%] lg:grid-cols-[67%_33%] 2xl:grid-cols-[75%_25%]">
     <div class="w-full h-full">
       <div class=" h-10 p-1 grid grid-cols-[1fr_auto]">
-        <h2 class="pl-2 leading-8 font-bold text-xl">
+        <h2 class="pl-2 leading-8 font-bold text-2xl text-black dark:text-white">
           Current Tasks
         </h2>
         <NuxtLink
           to="/task/new"
-          class=" px-2 rounded-md drop-shadow-md text-white font-bold leading-8 bg-teal-700 hover:underline"
+          class=" px-2 rounded-md drop-shadow-md text-white dark:text-black font-bold leading-8 bg-teal-700 dark:bg-teal-300 hover:underline"
         >
           Add Task
         </NuxtLink>
@@ -75,8 +75,8 @@
           v-model="searchValue"
           type="text"
           autocomplete="off"
-          placeholder="Enter a task title here"
-          class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 hover:bg-teal-300 focus:bg-teal-300 text-black"
+          placeholder="Search for a task..."
+          class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 dark:bg-teal-800 hover:bg-teal-300 hover:dark:bg-teal-700 focus:bg-teal-300 focus:dark:bg-teal-700 text-black dark:text-white"
         >
       </div>
       <ul
@@ -101,10 +101,10 @@
         v-else
         class=" pt-8"
       >
-        <h3 class=" font-bold text-3xl text-center text-black">
+        <h3 class=" font-bold text-3xl text-center text-black dark:text-white">
           No tasks!
         </h3>
-        <p class="text-center text-black">
+        <p class="text-center text-black dark:text-white">
           Click "Add Task" above to create a task.
         </p>
       </div>
@@ -113,24 +113,25 @@
       <div class="p-1 lg:p-2">
         <div v-if="stats.percent < 100">
           <p
-            class=" text-center text-3xl text-black font-bold"
+            class=" text-center text-3xl text-black dark:text-white font-bold"
           >
-            We're <span class="text-blue-700">{{ stats.percent }}%</span> of the way there!
+            We're <span class="text-blue-700 dark:text-blue-300">{{ stats.percent }}%</span> of the way there!
           </p>
         </div>
         <div v-else>
-          <p class=" text-center text-3xl text-green-700 font-bold">
+          <p class=" text-center text-3xl text-green-700 dark:text-green-300 font-bold">
             We've made it. 
           </p>
-          <p class=" text-center text-3xl text-green-700 font-bold">
+          <p class=" text-center text-3xl text-green-700 dark:text-green-300 font-bold">
             Great work, team!
           </p>
         </div>
       </div>
-      
-      <p class=" text-center font-bold">
-        A chart will appear here soon (woo!)
-      </p>
+      <StatsChart
+        :complete="stats.complete"
+        :ready="stats.ready"
+        :not-ready="stats.notReady"
+      />
     </div>
   </main>
 </template>
