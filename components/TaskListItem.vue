@@ -23,7 +23,7 @@
 <template>
   <NuxtLink 
     :to="`/task/${$props.taskId}`"
-    class=" block w-full max-w-full rounded-lg drop-shadow-lg lg:rounded-xl lg:drop-shadow-xl p-2 lg:p-4" 
+    class=" block w-full max-w-full rounded-lg drop-shadow-lg lg:rounded-xl lg:drop-shadow-xl p-2 lg:p-4 hover:cursor-pointer" 
     :class="bgClass"
     @mouseenter="() => {isMouseOver = true}"
     @mouseleave="() => {isMouseOver = false}"
@@ -46,7 +46,7 @@
     >
       {{ props.title }}
     </h3>
-    <p class=" h-12 lg:h-24 text-white leading-6 line-clamp-2 lg:line-clamp-4 overflow-ellipsis">
+    <p class=" h-12 lg:h-24 text-white line-clamp-2 lg:line-clamp-4 overflow-ellipsis">
       {{ props.description }}
     </p>
   </NuxtLink>

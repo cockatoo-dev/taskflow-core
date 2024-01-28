@@ -233,7 +233,7 @@
           v-else
           class=" block px-4 py-2 rounded-md drop-shadow-md font-bold text-white text-center bg-red-700"
         >
-          This task is not ready to be completed. {{ `${data.task.numDeps} ${data.task.numDeps == 1 ? 'task' : 'tasks'}` }} depended on by this task have not been completed yet.
+          This task is not ready to be completed. {{ `${data.task.numDeps} ${data.task.numDeps == 1 ? 'task' : 'tasks'}` }} depended on by this task {{ `${data.task.numDeps} ${data.task.numDeps == 1 ? 'has' : 'have'}` }} not been completed yet.
         </p>
       </div>
       
@@ -256,7 +256,7 @@
             >
             <p
               class=" h-4 text-right text-xs"
-              :class="editTitle.length >= 25 ? 'text-red-700' : ''"
+              :class="editTitle.length > 25 ? 'text-red-700' : ''"
             >
               {{ editTitle.length }}/25
             </p>
@@ -279,7 +279,7 @@
             />
             <p
               class=" h-4 text-right text-xs"
-              :class="editDescription.length >= 2500 ? 'text-red-700' : ''"
+              :class="editDescription.length > 2500 ? 'text-red-700' : ''"
             >
               <span v-if="editDescription.length >= 225">{{ editDescription.length }}/2500</span>
             </p>
@@ -361,27 +361,34 @@
             </h4>
 
             <div class="w-full max-w-full h-48">
-              <div
-                v-for="item of data.deps"
-                :key="item.id"
-                class="grid grid-cols-[1fr_auto]"
-              >
-                <RemoveDepsItem
-                  :id="item.id"
-                  :title="item.title"
-                  :is-complete="item.isComplete"
-                  :num-deps="item.numDeps"
-                />
-                <div class="pl-1">
-                  <button
-                    type="button"
-                    class=" px-2 py-1 rounded drop-shadow text-white bg-red-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
-                    :disabled="removeDepsDisable"
-                    @click="() => removeDeps(item.id)"
-                  >
-                    Remove
-                  </button>
+              <div v-if="data.deps.length > 0">
+                <div
+                  v-for="item of data.deps"
+                  :key="item.id"
+                  class="grid grid-cols-[1fr_auto]"
+                >
+                  <RemoveDepsItem
+                    :id="item.id"
+                    :title="item.title"
+                    :is-complete="item.isComplete"
+                    :num-deps="item.numDeps"
+                  />
+                  <div class="pl-1">
+                    <button
+                      type="button"
+                      class=" px-2 py-1 rounded drop-shadow text-white bg-red-700 hover:underline disabled:bg-slate-600 disabled:text-slate-400"
+                      :disabled="removeDepsDisable"
+                      @click="() => removeDeps(item.id)"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
+              </div>
+              <div v-else>
+                <p class=" pt-20 leading-8 text-center text-gray-700">
+                  This task does not have any dependencies.
+                </p>
               </div>
             </div>
           </div>

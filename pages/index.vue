@@ -1,15 +1,25 @@
 <script setup lang="ts">
   let refreshInterval: any
   const { data, refresh } = useFetch("/api/tasks")
+  const searchValue = ref('')
 
-  const sortedTasks = computed(() => {
+  const displayTasks = computed(() => {
     if (!data.value) {
       return []
     }
-    const result = [...data.value.tasks]
-    result.sort((a, b) => {
+    const sorted = [...data.value.tasks]
+    sorted.sort((a, b) => {
       return taskSortNum(b.isComplete, b.numDeps) - taskSortNum(a.isComplete, a.numDeps)
     })
+    const result: typeof sorted = []
+    for (const i of sorted) {
+      if (
+        i.title.toLowerCase().includes(searchValue.value.toLowerCase()) ||
+        i.description.toLowerCase().includes(searchValue.value.toLowerCase())
+      ) {
+        result.push(i)
+      }
+    }
     return result
   })
 
@@ -60,12 +70,21 @@
           Add Task
         </NuxtLink>
       </div>
+      <div class="px-1">
+        <input
+          v-model="searchValue"
+          type="text"
+          autocomplete="off"
+          placeholder="Enter a task title here"
+          class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 hover:bg-teal-300 focus:bg-teal-300 text-black"
+        >
+      </div>
       <ul
         v-if="data && data.tasks.length > 0" 
         class="lg:grid lg:grid-cols-2 2xl:grid-cols-3 p-2 lg:p-4 lg:gap-4 max-h-[calc(100vh-5.5rem)] overflow-y-auto list-none m-0"
       >
         <li 
-          v-for="item of sortedTasks" 
+          v-for="item of displayTasks" 
           :key="item.id"
           class="max-lg:pb-2 m-0"
         >

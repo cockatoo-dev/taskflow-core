@@ -56,7 +56,7 @@
         >
         <p
           class=" h-4 text-right text-xs"
-          :class="title.length >= 25 ? 'text-red-700' : ''"
+          :class="title.length > 25 ? 'text-red-700' : ''"
         >
           {{ title.length }}/25
         </p>
@@ -79,7 +79,7 @@
         />
         <p
           class=" h-4 text-right text-xs"
-          :class="description.length >= 2500 ? 'text-red-700' : ''"
+          :class="description.length > 2500 ? 'text-red-700' : ''"
         >
           <span v-if="description.length >= 225">{{ description.length }}/2500</span>
         </p>
