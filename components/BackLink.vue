@@ -1,8 +1,9 @@
 <template>
-  <NuxtLink
+  <UButton
     to="/"
-    class=" text-teal-700 dark:text-teal-300 hover:underline"
-  >
-    &lt; Back
-  </NuxtLink>
+    variant="link"
+    label="Back"
+    icon="i-heroicons-arrow-left-16-solid"
+    class="font-bold"
+  />
 </template>

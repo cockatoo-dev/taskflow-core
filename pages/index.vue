@@ -63,21 +63,34 @@
         <h2 class="pl-2 leading-8 font-bold text-2xl text-black dark:text-white">
           Current Tasks
         </h2>
-        <NuxtLink
+        <UButton 
+          to="/task/new"
+          label="Add Task"
+          icon="i-heroicons-plus-16-solid"
+          class="font-bold"
+        />
+        <!-- <NuxtLink
           to="/task/new"
           class=" px-2 rounded-md drop-shadow-md text-white dark:text-black font-bold leading-8 bg-teal-700 dark:bg-teal-300 hover:underline"
         >
           Add Task
-        </NuxtLink>
+        </NuxtLink> -->
       </div>
       <div class="p-1">
-        <input
+        <UInput 
+          v-model="searchValue"
+          autocomplete="off"
+          variant="outline"
+          icon="i-heroicons-magnifying-glass-16-solid"
+          placeholder="Search for a task..."
+        />
+        <!-- <input
           v-model="searchValue"
           type="text"
           autocomplete="off"
           placeholder="Search for a task..."
           class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 dark:bg-teal-800 hover:bg-teal-300 hover:dark:bg-teal-700 focus:bg-teal-300 focus:dark:bg-teal-700 text-black dark:text-white"
-        >
+        > -->
       </div>
       <ul
         v-if="data && data.tasks.length > 0" 
@@ -115,14 +128,14 @@
           <p
             class=" text-center text-3xl text-black dark:text-white font-bold"
           >
-            We're <span class="text-blue-700 dark:text-blue-300">{{ stats.percent }}%</span> of the way there!
+            We're <span class="text-blue-500 dark:text-blue-400">{{ stats.percent }}%</span> of the way there!
           </p>
         </div>
         <div v-else>
-          <p class=" text-center text-3xl text-green-700 dark:text-green-300 font-bold">
+          <p class=" text-center text-3xl text-green-500 dark:text-green-400 font-bold">
             We've made it. 
           </p>
-          <p class=" text-center text-3xl text-green-700 dark:text-green-300 font-bold">
+          <p class=" text-center text-3xl text-green-500 dark:text-green-400 font-bold">
             Great work, team!
           </p>
         </div>

@@ -26,9 +26,9 @@ const statsChartData = computed(() => {
         props.notReady
       ],
       backgroundColor: [
-        isDark.value ? '#86efac' : '#15803d',
-        isDark.value ? '#93c5fd' : '#1d4ed8',
-        isDark.value ? '#fca5a5' : '#b91c1c'
+        isDark.value ? '#4ade80' : '#22c55e',
+        isDark.value ? '#60a5fa' : '#3b82f6',
+        isDark.value ? '#f87171' : '#ef4444'
       ],
       borderWidth: 1,
       borderColor: isDark.value ? '#000000' : '#ffffff'
@@ -48,15 +48,18 @@ const chartOptions = ref({
       :options="chartOptions"
     />
   </div>
-  <div class="w-64 mx-auto text-2xl font-bold text-black dark:text-white">
+  <div
+    v-if="$props.complete > 0 || $props.ready > 0 || $props.notReady > 0"
+    class="w-64 mx-auto text-2xl font-bold text-black dark:text-white"
+  >
     <p>
-      <span class="text-green-700 dark:text-green-300">{{ $props.complete }}</span> tasks completed
+      <span class="text-green-500 dark:text-green-400">{{ $props.complete }}</span> {{ $props.complete == 1 ? 'task' : 'tasks' }} completed
     </p>
     <p>
-      <span class="text-blue-700 dark:text-blue-300">{{ $props.ready }}</span> tasks ready
+      <span class="text-blue-500 dark:text-blue-400">{{ $props.ready }}</span> {{ $props.ready == 1 ? 'task' : 'tasks' }} ready
     </p>
     <p>
-      <span class="text-red-700 dark:text-red-300">{{ $props.notReady }}</span> tasks not ready
+      <span class="text-red-500 dark:text-red-400">{{ $props.notReady }}</span> {{ $props.notReady == 1 ? 'task' : 'tasks' }} not ready
     </p>
   </div>
 </template>

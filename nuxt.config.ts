@@ -3,9 +3,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     "@nuxtjs/eslint-module",
-    "@nuxtjs/tailwindcss",
     "@nuxtjs/google-fonts",
-    "@vueuse/nuxt"
+    "@vueuse/nuxt",
+    "@nuxt/ui"
   ],
   googleFonts: {
     families: {

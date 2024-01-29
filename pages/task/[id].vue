@@ -18,12 +18,13 @@
   const editTitle = ref('')
   const editDescription = ref('')
   const editDisable = ref(false)
-  const editError = ref('')
   const addDepsSearch = ref('')
   const addDepsShow = ref(false)
   const addDepsId = ref('')
   const addDepsDisable = ref(true)
   const removeDepsDisable = ref(false)
+  const showError = ref(false)
+  const errorMessage = ref('')
 
   watch(data, async () => {
     if (!data || !data.value) {
@@ -65,13 +66,23 @@
     return false
   }
   
+  const displayDepsList = computed(() => {
+    if (!data || !data.value) {
+      return []
+    }
+    const result = [...data.value.deps]
+    result.sort((a, b) => {
+      return taskSortNum(b.isComplete, b.numDeps) - taskSortNum(a.isComplete, a.numDeps)
+    })
+    return result
+  })
+  
   const addDepsList = computed(() => {
     console.log(`update addDepsList with search value ${addDepsSearch.value}`)
     if (!addDepsFetch.data || !addDepsFetch.data.value) {
       return []
     }
 
-    console.log(addDepsFetch.data.value.tasksInfo)
     const result: typeof addDepsFetch.data.value.tasksInfo = []
     for (const i of addDepsFetch.data.value.tasksInfo) {
       if (
@@ -80,8 +91,6 @@
           i.title.toLowerCase().includes(addDepsSearch.value.toLowerCase())
         ) {
         result.push(i)
-      } else {
-        console.log(`skipping adding task ${i.title}`)
       }
     }
 
@@ -101,6 +110,7 @@
   const setComplete = async (value: boolean) => {
     completeDisabled.value = true
     localIsComplete.value = value
+
     await $fetch('/api/task/complete', {
       method: 'post',
       body: {
@@ -108,31 +118,50 @@
         value: value
       }
     })
+    .catch((err) => {
+      errorMessage.value = err.data.message || err.message
+      showError.value = true
+    })
+
     await refresh()
     completeDisabled.value = false
+
+    
+    
   }
   const deleteTask = async () => {
-    await $fetch('/api/task/delete', {
-      method: 'delete',
-      body: {
-        id: route.params.id
+    try {
+      await $fetch('/api/task/delete', {
+        method: 'delete',
+        body: {
+          id: route.params.id
+        }
+      })
+      navigateTo('/')
+    } catch (err) {
+      if (err instanceof Error) {
+        errorMessage.value = err.message
+        showError.value = true
       }
-    })
-    navigateTo('/')
+    }
+    
   }
   
   const editSave = async () => {
     editDisable.value = true
     if (editTitle.value == '') {
-      editError.value = 'Please enter a task title.'
+      errorMessage.value = 'Please enter a task title.'
+      showError.value = true
       editDisable.value = false
       return
     } else if (editTitle.value.length > 25) {
-      editError.value = 'Task title is too long.'
+      errorMessage.value = 'Task title is too long.'
+      showError.value = true
       editDisable.value = false
       return
     } else if (editDescription.value.length > 2500) {
-      editError.value = 'Task description is too long.'
+      errorMessage.value = 'Task description is too long.'
+      showError.value = true
       editDisable.value = false
       return
     }
@@ -145,10 +174,15 @@
         description: editDescription.value
       }
     })
-    
+    .catch((err) => {
+      errorMessage.value = err.data.message || err.message
+      showError.value = true
+    })
+
     await refresh()
     isEditing.value = false
     editDisable.value = false
+    
   }
   const editDiscard = () => {
     isEditing.value = false
@@ -184,6 +218,10 @@
         dest: addDepsId.value,
       }
     })
+    .catch((err) => {
+      errorMessage.value = err.data.message || err.message
+      showError.value = true
+    })
 
     addDepsShow.value = false
     addDepsSearch.value = ''
@@ -200,6 +238,11 @@
         dest: id
       }
     })
+    .catch((err) => {
+      errorMessage.value = err.data.message || err.message
+      showError.value = true
+    })
+
     await refresh()
     removeDepsDisable.value = false
   }
@@ -214,27 +257,63 @@
 
 <template>
   <StdContainer>
+    <ErrorModal 
+      v-model="showError"
+      :message="errorMessage"
+    />
     <BackLink />
     <div v-if="data">
       <div class="py-4">
-        <p
+        <UCard
           v-if="localIsComplete"
-          class=" block px-4 py-2 rounded-md drop-shadow-md font-bold text-white dark:text-black text-center bg-green-700 dark:bg-green-300"
+          :ui="{ body: { padding: 'p-2 sm:p-2' } }"
+          class="bg-green-500 dark:bg-green-400 text-white dark:text-black text-sm"
         >
-          This task has been completed. Great job!
-        </p>
-        <p
+          <div class="inline-flex leading-5">
+            <UIcon
+              name="i-heroicons-check-circle-16-solid"
+              class="h-5 w-5 ml-1 mr-2 mb-1"
+            />
+            <span class="font-bold tracking-wider">
+              COMPLETED
+            </span>
+          </div>
+          <p>This task has been completed. Great Job!</p>
+        </UCard>
+        <UCard
           v-else-if="data.task.numDeps <= 0"
-          class=" block px-4 py-2 rounded-md drop-shadow-md font-bold text-white dark:text-black text-center bg-blue-700 dark:bg-blue-300"
+          :ui="{ body: { padding: 'p-2 sm:p-2' } }"
+          class="bg-blue-500 dark:bg-blue-400 text-white dark:text-black text-sm"
         >
-          This task is ready to be completed. Time to get to work!
-        </p>
-        <p
+          <div class="inline-flex leading-5">
+            <UIcon
+              name="i-heroicons-play-circle-16-solid"
+              class="h-5 w-5 ml-1 mr-2 mb-1"
+            />
+            <span class="font-bold tracking-wider">
+              READY TO GO
+            </span>
+          </div>
+          <p>This task is ready to be completed. Time to get to work!</p>
+        </UCard>
+        <UCard
           v-else
-          class=" block px-4 py-2 rounded-md drop-shadow-md font-bold text-white dark:text-black text-center bg-red-700 dark:bg-red-300"
+          :ui="{ body: { padding: 'p-2 sm:p-2' } }"
+          class="bg-red-500 dark:bg-red-400 text-white dark:text-black text-sm"
         >
-          This task is not ready to be completed. {{ `${data.task.numDeps} ${data.task.numDeps == 1 ? 'task' : 'tasks'}` }} depended on by this task {{ `${data.task.numDeps == 1 ? 'has' : 'have'}` }} not been completed yet.
-        </p>
+          <div class="inline-flex leading-5">
+            <UIcon
+              name="i-heroicons-clock-16-solid"
+              class="h-5 w-5 ml-1 mr-2 mb-1"
+            />
+            <span class="font-bold tracking-wider">
+              NOT READY
+            </span>
+          </div>
+          <p>
+            This task is not ready to be completed. {{ `${data.task.numDeps} ${data.task.numDeps == 1 ? 'task' : 'tasks'}` }} depended on by this task {{ `${data.task.numDeps == 1 ? 'has' : 'have'}` }} not been completed yet.
+          </p>
+        </UCard>
       </div>
       
       <div v-if="isEditing">
@@ -246,14 +325,14 @@
             >
               Title (required)
             </label>
-            <input
+            <UInput 
               id="edit-title"
               v-model="editTitle"
-              type="text"
               required
               autocomplete="off"
-              class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 dark:bg-teal-800 hover:bg-teal-300 hover:dark:bg-teal-700 focus:bg-teal-300 focus:dark:bg-teal-700 text-black dark:text-white text-xl sm:text-2xl font-bold"
-            >
+              placeholder="Enter a task title here..."
+              class="font-bold"
+            />
             <p
               class=" h-4 text-right text-xs text-black dark:text-white"
               :class="editTitle.length > 25 ? 'text-red-700 dark:text-red-300' : ''"
@@ -269,13 +348,12 @@
             >
               Description
             </label>
-            <textarea
+            <UTextarea 
               id="edit-description"
               v-model="editDescription"
-              rows="4"
+              :rows="4"
               autocomplete="off"
-              maxlength="2500"
-              class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 dark:bg-teal-800 hover:bg-teal-300 hover:dark:bg-teal-700 focus:bg-teal-300 focus:dark:bg-teal-700 text-black dark:text-white"
+              placeholder="Enter a task description here..."
             />
             <p
               class=" h-4 text-right text-xs"
@@ -286,27 +364,21 @@
           </div>
 
           <div class="text-center">
-            <button
+            <UButton 
               type="submit"
-              class=" mx-1 px-2 py-1 rounded-md drop-shadow-md text-white dark:text-black font-bold bg-green-700 dark:bg-green-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
-              :disabled="editDisable"
+              color="green"
+              label="Save Changes"
+              icon="i-heroicons-document-check-16-solid"
+              class="font-bold mr-1"
               @click.prevent="editSave"
-            >
-              Save Changes
-            </button>
-            <button
+            />
+            <UButton 
               type="button"
-              class=" mx-1 px-2 py-1 rounded-md drop-shadow-md text-white dark:text-black font-bold bg-teal-700 dark:bg-teal-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
+              label="Discard Changes"
+              icon="i-heroicons-trash-16-solid"
+              class="font-bold"
               @click="editDiscard"
-            >
-              Discard Changes
-            </button>
-          </div>
-          <div
-            v-if="editError != ''"
-            class="mt-2 px-2 py-1 bg-red-300 dark:bg-red-700 border border-red-700 dark:border-red-300 rounded-md"
-          >
-            {{ editError }}
+            />
           </div>
         </form>
       </div>
@@ -314,44 +386,36 @@
         <h2 class=" text-3xl text-black dark:text-white font-bold pb-2">
           {{ data.task.title }}
         </h2>
-
-        <div class="text-center pb-2">
-          <button
-            v-if="!localIsComplete"
-            type="button"
-            class=" px-2 py-1 rounded-md drop-shadow-md text-white dark:text-black font-bold bg-green-700 dark:bg-green-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
-            :disabled="completeDisabled"
-            @click="() => setComplete(true)"
-          >
-            Mark as Completed
-          </button>
-          <button
-            v-else
-            type="button"
-            class=" px-2 py-1 rounded-md drop-shadow-md text-white dark:text-black font-bold bg-teal-700 dark:bg-teal-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
-            :disabled="completeDisabled"
-            @click="() => setComplete(false)"
-          >
-            Mark as Not Completed
-          </button>
-        </div>
-
         <MultiLineP
           :text="data.task.description"
-          class="pb-2 text-black dark:text-white"
+          class="pb-2 text-sm text-black dark:text-white"
         />
 
         <div class="text-center pt-2">
-          <button
-            type="button"
-            class=" px-2 py-1 rounded-md drop-shadow-md text-white dark:text-black font-bold bg-teal-700 dark:bg-teal-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
-            @click="() => isEditing = true"
-          >
-            Edit Task Details
-          </button>
+          <UButton 
+            label="Edit Task Details"
+            icon="i-heroicons-pencil-square-16-solid"
+            class="font-bold mr-1"
+            @click="() => {isEditing = true}"
+          />
+          <UButton 
+            v-if="!localIsComplete"
+            color="green"
+            icon="i-heroicons-check-16-solid"
+            label="Mark as Completed"
+            class="font-bold"
+            @click="() => setComplete(true)"
+          />
+          <UButton 
+            v-else
+            icon="i-heroicons-x-mark-16-solid"
+            label="Mark as Not Completed"
+            class="font-bold"
+            @click="() => setComplete(false)"
+          />
         </div>
 
-        <h3 class="text-xl font-bold text-black dark:text-white">
+        <h3 class="text-xl font-bold text-black dark:text-white pt-4">
           Task Dependencies
         </h3>
         <div class="w-full md:grid md:grid-cols-2">
@@ -361,9 +425,9 @@
             </h4>
 
             <div class="w-full max-w-full h-48 overflow-y-auto">
-              <div v-if="data.deps.length > 0">
+              <div v-if="displayDepsList.length > 0">
                 <div
-                  v-for="item of data.deps"
+                  v-for="item of displayDepsList"
                   :key="item.id"
                   class="pt-1 grid grid-cols-[1fr_auto]"
                 >
@@ -374,36 +438,36 @@
                     :num-deps="item.numDeps"
                   />
                   <div class="pl-1">
-                    <button
-                      type="button"
-                      class=" px-2 py-1 rounded drop-shadow text-white dark:text-black font-bold bg-red-700 dark:bg-red-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
+                    <UButton 
+                      color="red"
+                      icon="i-heroicons-x-mark-16-solid"
+                      label="Remove"
+                      class="font-bold"
                       :disabled="removeDepsDisable"
                       @click="() => removeDeps(item.id)"
-                    >
-                      Remove
-                    </button>
+                    />
                   </div>
                 </div>
               </div>
               <div v-else>
-                <p class=" pt-20 leading-8 text-center text-gray-700 dark:text-gray-300">
+                <p class=" pt-20 text-sm leading-8 text-center text-gray-700 dark:text-gray-300">
                   This task does not have any dependencies.
                 </p>
               </div>
             </div>
           </div>
           <div class="md:pl-1">
-            <h4 class=" text-black dark:text-white font-bold">
+            <h4 class=" text-black dark:text-white font-bold pb-1">
               Add a Dependency
             </h4>
-            <input
+            <UInput 
               v-model="addDepsSearch"
-              type="text"
               autocomplete="off"
-              placeholder="Enter a task title here"
-              class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 dark:bg-teal-800 hover:bg-teal-300 hover:dark:bg-teal-700 focus:bg-teal-300 focus:dark:bg-teal-700 text-black dark:text-white"
+              variant="outline"
+              icon="i-heroicons-magnifying-glass-16-solid"
+              placeholder="Search for a task title..."
               @focus="addDepsFocus"
-            >
+            />
             <div class="h-32 my-1 w-full overflow-y-auto">
               <div v-if="addDepsShow && addDepsFetch.data.value">
                 <div
@@ -422,37 +486,36 @@
                 </div>
               </div>
               <div v-else-if="addDepsShow">
-                <p class="pt-12 text-center text-gray-700 dark:text-gray-300">
+                <p class="pt-12 text-sm text-center text-gray-700 dark:text-gray-300">
                   Loading tasks...
                 </p>
               </div>
               <div v-else>
-                <p class="pt-12 text-center text-gray-700 dark:text-gray-300">
+                <p class="pt-12 text-sm text-center text-gray-700 dark:text-gray-300">
                   Use the search bar above to search for a task.
                 </p>
               </div>
             </div>
             <div>
-              <button
-                type="button"
-                class="mx-1 px-2 py-1 rounded-md drop-shadow-md text-white dark:text-black font-bold bg-teal-700 dark:bg-teal-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
+              <UButton 
+                label="Add Dependency"
+                icon="i-heroicons-plus-16-solid"
+                class="font-bold"
                 :disabled="addDepsDisable"
                 @click="addDepsSubmit"
-              >
-                Add Dependency
-              </button>
+              />
             </div>
           </div>
         </div>
 
-        <div class="text-center pt-2">
-          <button
-            type="button"
-            class=" px-2 py-1 rounded-md drop-shadow-md text-white dark:text-black font-bold bg-red-700 dark:bg-red-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
+        <div class="text-center pt-8">
+          <UButton 
+            color="red"
+            icon="i-heroicons-trash-16-solid"
+            label="Delete Task"
+            class="font-bold"
             @click="deleteTask"
-          >
-            Delete Task
-          </button>
+          />
         </div>
       </div>
     </div>

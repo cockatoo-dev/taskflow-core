@@ -2,10 +2,6 @@
   useHead({
     title: "taskflow-core"
   })
-
-  onMounted(() => {
-    document.body.classList.add('dark:bg-black')
-  })
 </script>
 
 <template>
@@ -15,9 +11,3 @@
     </NuxtLayout>
   </div>
 </template>
-
-<style>
-  .dark-mode {
-    background-color: black
-  }
-</style>

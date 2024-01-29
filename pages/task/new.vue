@@ -46,14 +46,14 @@
         >
           Title (required)
         </label>
-        <input
+        <UInput 
           id="new-title"
           v-model="title"
-          type="text"
           required
           autocomplete="off"
-          class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 dark:bg-teal-800 hover:bg-teal-300 hover:dark:bg-teal-700 focus:bg-teal-300 focus:dark:bg-teal-700 text-black dark:text-white text-xl sm:text-2xl font-bold"
-        >
+          placeholder="Enter a task title here..."
+          class="font-bold"
+        />
         <p
           class=" h-4 text-right text-xs"
           :class="title.length > 25 ? 'text-red-700 dark:text-red-300' : ''"
@@ -69,13 +69,12 @@
         >
           Description
         </label>
-        <textarea
+        <UTextarea 
           id="new-description"
           v-model="description"
-          rows="4"
+          :rows="4"
           autocomplete="off"
-          maxlength="2500"
-          class=" w-full px-2 py-1 rounded-md drop-shadow-md bg-teal-200 dark:bg-teal-800 hover:bg-teal-300 hover:dark:bg-teal-700 focus:bg-teal-300 focus:dark:bg-teal-700 text-black dark:text-white"
+          placeholder="Enter a task description here..."
         />
         <p
           class=" h-4 text-right text-xs"
@@ -85,14 +84,13 @@
         </p>
       </div>
 
-      <button
+      <UButton 
         type="submit"
-        class=" block m-0 px-2 py-1 rounded-md drop-shadow-md text-white dark:text-black font-bold bg-teal-700 dark:bg-teal-300 hover:underline disabled:bg-slate-600 disabled:dark:bg-slate-400 disabled:text-slate-400 disabled:dark:text-slate-600"
-        :disabled="disableSubmit"
+        label="Create Task"
+        icon="i-heroicons-document-plus-16-solid"
+        class="font-bold mr-1"
         @click.prevent="submitForm"
-      >
-        Create task
-      </button>
+      />
 
       <div
         v-if="formError != ''"
@@ -101,7 +99,7 @@
         {{ formError }}
       </div>
     </form>
-    <p class="pt-4 text-black dark:text-white">
+    <p class="pt-4 text-sm text-black dark:text-white">
       Dependencies for this task can be added after the task is created.
     </p>
   </StdContainer>
