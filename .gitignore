@@ -1,5 +1,5 @@
 # Local database
-localDB.db
+*.db
 
 # Nuxt dev/build outputs
 .output

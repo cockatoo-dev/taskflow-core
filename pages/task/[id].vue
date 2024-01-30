@@ -42,7 +42,9 @@
     }
 
     if (data.value.task.numDeps != num) {
-      console.log(`numdeps check failed: expected: ${num}, actual: ${data.value.task.numDeps}`)
+      // console.log(`numdeps check failed: expected: ${num}, actual: ${data.value.task.numDeps}`)
+      // errorMessage.value = `numdeps check failed: expected: ${num}, actual: ${data.value.task.numDeps}`
+      // showError.value = true
       await $fetch('/api/task/depscheck', {
         method: 'get',
         params: {
@@ -272,7 +274,7 @@
           <div class="inline-flex leading-5">
             <UIcon
               name="i-heroicons-check-circle-16-solid"
-              class="h-5 w-5 ml-1 mr-2 mb-1"
+              class="h-5 w-5 mr-2 mb-1"
             />
             <span class="font-bold tracking-wider">
               COMPLETED
@@ -288,7 +290,7 @@
           <div class="inline-flex leading-5">
             <UIcon
               name="i-heroicons-play-circle-16-solid"
-              class="h-5 w-5 ml-1 mr-2 mb-1"
+              class="h-5 w-5 mr-2 mb-1"
             />
             <span class="font-bold tracking-wider">
               READY TO GO
@@ -304,7 +306,7 @@
           <div class="inline-flex leading-5">
             <UIcon
               name="i-heroicons-clock-16-solid"
-              class="h-5 w-5 ml-1 mr-2 mb-1"
+              class="h-5 w-5 mr-2 mb-1"
             />
             <span class="font-bold tracking-wider">
               NOT READY

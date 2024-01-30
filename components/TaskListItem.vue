@@ -50,7 +50,7 @@
       <div class="inline-flex leading-5">
         <UIcon
           :name="icon"
-          class="h-5 w-5 ml-1 mr-2 mb-1"
+          class="h-5 w-5 mr-2 mb-1"
         />
         <span
           class="font-bold tracking-wider"
