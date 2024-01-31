@@ -20,7 +20,6 @@
   const editDisable = ref(false)
   const addDepsSearch = ref('')
   const addDepsShow = ref(false)
-  const addDepsId = ref('')
   const addDepsDisable = ref(true)
   const removeDepsDisable = ref(false)
   const showError = ref(false)
@@ -56,15 +55,11 @@
   })
 
   const depsExists = (id: string) => {
-    console.log('run depsExists')
     for (const i of data.value?.deps || []) {
-      console.log(i.title)
       if (i.id == id) {
-        console.log('return true')
         return true
       }
     }
-    console.log('return false')
     return false
   }
   
@@ -80,7 +75,6 @@
   })
   
   const addDepsList = computed(() => {
-    console.log(`update addDepsList with search value ${addDepsSearch.value}`)
     if (!addDepsFetch.data || !addDepsFetch.data.value) {
       return []
     }
@@ -127,8 +121,6 @@
 
     await refresh()
     completeDisabled.value = false
-
-    
     
   }
   const deleteTask = async () => {
@@ -199,15 +191,9 @@
     }
     addDepsShow.value = true
     addDepsDisable.value = true
-    addDepsId.value = ''
   }
 
-  const addDepsSelect = (id: string) => {
-    addDepsId.value = id
-    addDepsDisable.value = false
-  }
-  
-  const addDepsSubmit = async () => {
+  const addDeps = async (id: string) => {
     if (!data.value) {
       return
     }
@@ -217,7 +203,7 @@
       method: 'post',
       body: {
         source: data.value.task.id,
-        dest: addDepsId.value,
+        dest: id,
       }
     })
     .catch((err) => {
@@ -225,10 +211,8 @@
       showError.value = true
     })
 
-    addDepsShow.value = false
-    addDepsSearch.value = ''
-    addDepsId.value = ''
     await refresh()
+    addDepsDisable.value = false
   }
 
   const removeDeps = async (id: string) => {
@@ -250,6 +234,9 @@
   }
 
   onMounted(() => {
+    if (data && data.value) {
+      localIsComplete.value = data.value.task.isComplete
+    }
     refreshInterval = setInterval(refreshFn, 20000)
   })
   onUnmounted(() => {
@@ -259,6 +246,7 @@
 
 <template>
   <StdContainer>
+    <p>localIsComplete: {{ localIsComplete }}</p>
     <ErrorModal 
       v-model="showError"
       :message="errorMessage"
@@ -267,7 +255,7 @@
     <div v-if="data">
       <div class="py-4">
         <UCard
-          v-if="localIsComplete"
+          v-if="data.task.isComplete"
           :ui="{ body: { padding: 'p-2 sm:p-2' } }"
           class="bg-green-500 dark:bg-green-400 text-white dark:text-black text-sm"
         >
@@ -401,7 +389,7 @@
             @click="() => {isEditing = true}"
           />
           <UButton 
-            v-if="!localIsComplete"
+            v-if="!data.task.isComplete"
             color="green"
             icon="i-heroicons-check-16-solid"
             label="Mark as Completed"
@@ -422,18 +410,18 @@
         </h3>
         <div class="w-full md:grid md:grid-cols-2">
           <div class="md:pr-1">
-            <h4 class=" text-black dark:text-white font-bold">
+            <h4 class=" text-black dark:text-white font-bold pb-1">
               Current Dependencies
             </h4>
 
-            <div class="w-full max-w-full h-48 overflow-y-auto">
+            <div class="w-full max-w-full h-48 overflow-y-auto border border-black">
               <div v-if="displayDepsList.length > 0">
                 <div
                   v-for="item of displayDepsList"
                   :key="item.id"
                   class="pt-1 grid grid-cols-[1fr_auto]"
                 >
-                  <RemoveDepsItem
+                  <DepsListItem
                     :id="item.id"
                     :title="item.title"
                     :is-complete="item.isComplete"
@@ -442,7 +430,7 @@
                   <div class="pl-1">
                     <UButton 
                       color="red"
-                      icon="i-heroicons-x-mark-16-solid"
+                      icon="i-heroicons-minus-16-solid"
                       label="Remove"
                       class="font-bold"
                       :disabled="removeDepsDisable"
@@ -470,42 +458,41 @@
               placeholder="Search for a task title..."
               @focus="addDepsFocus"
             />
-            <div class="h-32 my-1 w-full overflow-y-auto">
+            <div class="h-40 w-full overflow-y-auto border border-black">
               <div v-if="addDepsShow && addDepsFetch.data.value">
                 <div
                   v-for="item of addDepsList"
                   :key="item.id"
-                  class="p-1"
-                  @click="() => addDepsSelect(item.id)"
+                  class="pt-1 grid grid-cols-[1fr_auto]"
                 >
-                  <AddDepsItem
+                  <DepsListItem
                     :id="item.id"
                     :title="item.title"
                     :is-complete="item.isComplete"
                     :num-deps="item.numDeps"
-                    :selected="addDepsId"
                   />
+                  <div class="pl-1">
+                    <UButton 
+                      color="green"
+                      icon="i-heroicons-plus-16-solid"
+                      label="Add"
+                      class="font-bold"
+                      :disabled="removeDepsDisable"
+                      @click="() => addDeps(item.id)"
+                    />
+                  </div>
                 </div>
               </div>
               <div v-else-if="addDepsShow">
-                <p class="pt-12 text-sm text-center text-gray-700 dark:text-gray-300">
+                <p class="pt-14 text-sm text-center text-gray-700 dark:text-gray-300">
                   Loading tasks...
                 </p>
               </div>
               <div v-else>
-                <p class="pt-12 text-sm text-center text-gray-700 dark:text-gray-300">
+                <p class="pt-14 text-sm text-center text-gray-700 dark:text-gray-300">
                   Use the search bar above to search for a task.
                 </p>
               </div>
-            </div>
-            <div>
-              <UButton 
-                label="Add Dependency"
-                icon="i-heroicons-plus-16-solid"
-                class="font-bold"
-                :disabled="addDepsDisable"
-                @click="addDepsSubmit"
-              />
             </div>
           </div>
         </div>
@@ -520,6 +507,11 @@
           />
         </div>
       </div>
+    </div>
+    <div v-else>
+      <p class="text-center font-bold text-2xl text-black dark:text-white pt-8">
+        Loading...
+      </p>
     </div>
   </StdContainer>
 </template>
