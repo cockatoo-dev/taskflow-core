@@ -12,7 +12,6 @@
     immediate: false
   })
 
-  const localIsComplete = ref(false)
   const completeDisabled = ref(false)
   const isEditing = ref(false)
   const editTitle = ref('')
@@ -29,9 +28,6 @@
     if (!data || !data.value) {
       return
     }
-    localIsComplete.value = data.value.task.isComplete
-    editTitle.value = data.value.task.title
-    editDescription.value = data.value.task.description
 
     let num = 0
     for (const i of data.value.deps) {
@@ -105,7 +101,6 @@
 
   const setComplete = async (value: boolean) => {
     completeDisabled.value = true
-    localIsComplete.value = value
 
     await $fetch('/api/task/complete', {
       method: 'post',
@@ -139,6 +134,16 @@
       }
     }
     
+  }
+
+  const editStart = () => {
+    if (!data || !data.value) {
+      return
+    }
+
+    editTitle.value = data.value.task.title
+    editDescription.value = data.value.task.description
+    isEditing.value = true
   }
   
   const editSave = async () => {
@@ -234,9 +239,6 @@
   }
 
   onMounted(() => {
-    if (data && data.value) {
-      localIsComplete.value = data.value.task.isComplete
-    }
     refreshInterval = setInterval(refreshFn, 20000)
   })
   onUnmounted(() => {
@@ -246,7 +248,6 @@
 
 <template>
   <StdContainer>
-    <p>localIsComplete: {{ localIsComplete }}</p>
     <ErrorModal 
       v-model="showError"
       :message="errorMessage"
@@ -386,7 +387,7 @@
             label="Edit Task Details"
             icon="i-heroicons-pencil-square-16-solid"
             class="font-bold mr-1"
-            @click="() => {isEditing = true}"
+            @click="editStart"
           />
           <UButton 
             v-if="!data.task.isComplete"
