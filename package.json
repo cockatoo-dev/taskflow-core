@@ -17,7 +17,7 @@
     "@nuxtjs/tailwindcss": "^6.10.1",
     "drizzle-kit": "^0.20.13",
     "eslint": "^8.54.0",
-    "nuxt": "^3.9.3",
+    "nuxt": "^3.10.0",
     "vue": "^3.4.0",
     "vue-router": "^4.2.5"
   },
