@@ -9,11 +9,11 @@
   
   const bgClass = computed(() => {
     if (props.isComplete) {
-      return "bg-green-500 dark:bg-green-400 hover:bg-green-600 dark:hover:bg-green-300"
+      return "bg-green-500 dark:bg-green-400 hover:bg-green-600 dark:hover:bg-green-500"
     } else if (props.numDeps <= 0) {
-      return "bg-blue-500 dark:bg-blue-400 hover:bg-blue-600 dark:hover:bg-blue-300"
+      return "bg-blue-500 dark:bg-blue-400 hover:bg-blue-600 dark:hover:bg-blue-500"
     } else {
-      return "bg-red-500 dark:bg-red-400 hover:bg-red-600 dark:hover:bg-red-300"
+      return "bg-red-500 dark:bg-red-400 hover:bg-red-600 dark:hover:bg-red-500"
     }
   })
 
