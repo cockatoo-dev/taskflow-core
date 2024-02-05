@@ -282,7 +282,7 @@
               class="h-5 w-5 mr-2 mb-1"
             />
             <span class="font-bold tracking-wider">
-              READY TO GO
+              READY
             </span>
           </div>
           <p>This task is ready to be completed. Time to get to work!</p>
@@ -354,20 +354,39 @@
             </p>
           </div>
 
-          <div class="text-center">
+          <div class="block sm:hidden text-center">
             <UButton 
               type="submit"
               color="green"
               label="Save Changes"
               icon="i-heroicons-document-check-16-solid"
-              class="font-bold mr-1"
+              class="font-bold"
+              @click.prevent="editSave"
+            />
+          </div>
+          <div class="block sm:hidden pt-1 text-center">
+            <UButton 
+              type="button"
+              label="Discard Changes"
+              icon="i-heroicons-trash-16-solid"
+              class="font-bold"
+              @click="editDiscard"
+            />
+          </div>
+          <div class="hidden sm:block text-center">
+            <UButton 
+              type="submit"
+              color="green"
+              label="Save Changes"
+              icon="i-heroicons-document-check-16-solid"
+              class="font-bold"
               @click.prevent="editSave"
             />
             <UButton 
               type="button"
               label="Discard Changes"
               icon="i-heroicons-trash-16-solid"
-              class="font-bold"
+              class="font-bold ml-1"
               @click="editDiscard"
             />
           </div>
@@ -382,13 +401,15 @@
           class="pb-2 text-sm text-black dark:text-white"
         />
 
-        <div class="text-center pt-2">
+        <div class="block sm:hidden pt-2 text-center">
           <UButton 
             label="Edit Task Details"
             icon="i-heroicons-pencil-square-16-solid"
-            class="font-bold mr-1"
+            class="font-bold"
             @click="editStart"
           />
+        </div>
+        <div class="block sm:hidden pt-1 text-center">
           <UButton 
             v-if="!data.task.isComplete"
             color="green"
@@ -405,6 +426,29 @@
             @click="() => setComplete(false)"
           />
         </div>
+        <div class="hidden sm:block pt-2 text-center">
+          <UButton 
+            label="Edit Task Details"
+            icon="i-heroicons-pencil-square-16-solid"
+            class="font-bold mr-1 mt-1"
+            @click="editStart"
+          />
+          <UButton 
+            v-if="!data.task.isComplete"
+            color="green"
+            icon="i-heroicons-check-16-solid"
+            label="Mark as Completed"
+            class="font-bold mt-1"
+            @click="() => setComplete(true)"
+          />
+          <UButton 
+            v-else
+            icon="i-heroicons-x-mark-16-solid"
+            label="Mark as Not Completed"
+            class="font-bold mt-1"
+            @click="() => setComplete(false)"
+          />
+        </div>
 
         <h3 class="text-xl font-bold text-black dark:text-white pt-4">
           Task Dependencies
@@ -415,7 +459,7 @@
               Current Dependencies
             </h4>
 
-            <div class="w-full max-w-full h-48 overflow-y-auto border border-black">
+            <div class="w-full max-w-full h-48 overflow-y-auto ">
               <div v-if="displayDepsList.length > 0">
                 <div
                   v-for="item of displayDepsList"
@@ -459,7 +503,7 @@
               placeholder="Search for a task title..."
               @focus="addDepsFocus"
             />
-            <div class="h-40 w-full overflow-y-auto border border-black">
+            <div class="h-40 w-full overflow-y-auto">
               <div v-if="addDepsShow && addDepsFetch.data.value">
                 <div
                   v-for="item of addDepsList"

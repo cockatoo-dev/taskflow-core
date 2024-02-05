@@ -1,6 +1,12 @@
 <script setup lang="ts">
   useHead({
-    title: "taskflow-core"
+    title: "Taskflow"
+  })
+  useSeoMeta({
+    title: 'Taskflow',
+    ogTitle: 'Taskflow',
+    description: 'Helping keep your team coordinated to meet your goals!',
+    ogDescription: 'Helping keep your team coordinated to meet your goals!'
   })
 </script>
 
