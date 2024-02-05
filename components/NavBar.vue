@@ -8,7 +8,7 @@
     </div>
     
     <h1 class="block text-white dark:text-black py-2 text-2xl font-bold">
-      Taskflow <span class="text-sm font-normal">v0.7.1-beta</span> 
+      Taskflow <span class="text-sm font-normal">MegaLAN Beta</span> 
     </h1>
   </nav>
 </template>
