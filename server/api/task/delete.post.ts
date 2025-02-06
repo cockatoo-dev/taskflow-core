@@ -1,8 +1,7 @@
 import { z } from "zod"
 
 const bodySchema = z.object({
-  taskId: z.string(),
-  value: z.boolean()
+  taskId: z.string()
 })
 
 export default defineEventHandler(async (e) => {
@@ -10,11 +9,13 @@ export default defineEventHandler(async (e) => {
   const bodyData = checkParseResult(bodyParse)
   const db = useDB(e)
 
-  if (!(await db.isTaskExists(bodyData.taskId))) {
+  const id = bodyData.taskId
+  if (!id) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Invalid task ID"
+      statusMessage: "Invalid request format"
     })
   }
-  await db.setTaskComplete(bodyData.taskId, bodyData.value)
+
+  await db.deleteTask(id)
 })

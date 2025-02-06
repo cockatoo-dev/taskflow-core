@@ -1,10 +1,10 @@
 import { dbInterface } from "../db/dbInterface"
 import { db } from "../db/localDB"
-import { H3Error } from 'h3'
+import { H3Error, H3Event } from 'h3'
 
 let _db: dbInterface | undefined
 
-export const useDB = () => {
+export const useDB = (e: H3Event) => {
   if (!_db) {
     _db = new db()
   }

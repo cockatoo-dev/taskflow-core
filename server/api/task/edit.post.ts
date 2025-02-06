@@ -2,7 +2,8 @@ import { z } from "zod"
 
 const bodySchema = z.object({
   taskId: z.string(),
-  value: z.boolean()
+  title: z.string(),
+  description: z.string()
 })
 
 export default defineEventHandler(async (e) => {
@@ -16,5 +17,5 @@ export default defineEventHandler(async (e) => {
       statusMessage: "Invalid task ID"
     })
   }
-  await db.setTaskComplete(bodyData.taskId, bodyData.value)
+  await db.editTask(bodyData.taskId, bodyData.title, bodyData.description)
 })

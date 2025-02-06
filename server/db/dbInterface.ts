@@ -4,14 +4,14 @@ export type DBDepsItem = {
 }
 
 export type DBDepsTaskInfo = {
-  id: string,
+  taskId: string,
   title: string,
   numDeps: number,
   isComplete: boolean
 }
 
 export type DBTask = {
-  id: string,
+  taskId: string,
   title: string,
   description: string,
   numDeps: number,
@@ -21,14 +21,14 @@ export type DBTask = {
 export interface dbInterface {
   
   // Check if a task with the given ID exists
-  isTaskExists: (id: string) => Promise<boolean>
+  isTaskExists: (taskId: string) => Promise<boolean>
 
   // Check if a dependency with the given source and est exists
   isDepsExist: (source: string, dest: string) => Promise<boolean>
   
   // Get (id, title, description, isReady, isComplete) about a specific task
   // Return object should be an array with one item.
-  getTask: (id: string) => Promise<DBTask[]>
+  getTask: (taskId: string) => Promise<DBTask[]>
 
   getTaskPair: (first: string, second: string) => Promise<DBTask[]>
 
@@ -37,20 +37,20 @@ export interface dbInterface {
 
   getTasksInfo: () => Promise<DBDepsTaskInfo[]>
 
-  // Add a task with initial state isReady=true, isComplete=false
-  addTask: (id: string, title: string, description: string) => Promise<void>
+  // Add a task with initial state isComplete=false numDeps=0
+  addTask: (taskId: string, title: string, description: string) => Promise<void>
 
   // Edit task with the specified ID
-  editTask: (id: string, title: string, description: string) => Promise<void>
+  editTask: (taskId: string, title: string, description: string) => Promise<void>
 
   // Set the complete status of a specified task
-  setTaskComplete: (id: string, value: boolean) => Promise<void>
+  setTaskComplete: (taskId: string, value: boolean) => Promise<void>
 
   // Set the unsatisfied dependencies of a task
-  setTaskNumDeps: (id: string, value: number) => Promise<void>
+  setTaskNumDeps: (taskId: string, value: number) => Promise<void>
 
   // Delete a task and all dependencies which contain that task
-  deleteTask: (id: string) => Promise<void>
+  deleteTask: (taskId: string) => Promise<void>
 
   // Get (source, dest) of all dependencies between all tasks.
   getDeps: () => Promise<DBDepsItem[]>

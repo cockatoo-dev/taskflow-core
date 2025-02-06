@@ -1,16 +1,16 @@
-export default defineEventHandler(async (e) => {
-  const db = useDB()
-  const id = getQuery(e).id as string
+import { z } from "zod"
 
-  if (!id) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: "Invalid task ID"
-    })
-  }
+const querySchema = z.object({
+  taskId: z.string()
+})
+
+export default defineEventHandler(async (e) => {
+  const db = useDB(e)
+  const queryParse = await getValidatedQuery(e, (q) => querySchema.safeParse(q))
+  const queryData = checkParseResult(queryParse)
 
   try {
-    const dbTaskData = await db.getTask(id)
+    const dbTaskData = await db.getTask(queryData.taskId)
     if (dbTaskData.length < 1) {
       throw createError({
         statusCode: 400,
@@ -18,7 +18,7 @@ export default defineEventHandler(async (e) => {
       })
     }
     
-    const dbDepsData = await db.getSourceDepsInfo(id)
+    const dbDepsData = await db.getSourceDepsInfo(queryData.taskId)
     return {
       task: dbTaskData[0],
       deps: dbDepsData
