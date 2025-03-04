@@ -234,6 +234,7 @@
               color="green"
               icon="i-heroicons-check-circle-16-solid"
               label="Mark as Completed"
+              :loading="completeDisabled"
               :ui="BUTTON_UI_OBJECT"
               @click="() => setComplete(true)"
             />
@@ -241,6 +242,7 @@
               v-else
               icon="i-heroicons-exclamation-circle-16-solid"
               label="Mark as Not Completed"
+              :loading="completeDisabled"
               :ui="BUTTON_UI_OBJECT"
               @click="() => setComplete(false)"
             />
